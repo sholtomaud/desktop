@@ -11,7 +11,37 @@
   <script type="text/javascript" src="../node_modules/stencila/build/stencila.js"></script>
   <script>
     const { MemoryBackend, Dashboard } = window.stencila
-    let stubBackend = new MemoryBackend()
+    const { Component } = window.substance
+    const stubBackend = new MemoryBackend()
+    const ipc = require('electron').ipcRenderer
+    const windowId = require('electron').remote.getCurrentWindow().id
+
+
+    class MyButton extends Component {
+      constructor(...args) {
+        super(...args)
+      }
+      render($$) {
+        return $$('div').append(
+          $$('button').text('Foo')
+            .on('click', () => {
+              console.log('FOO')
+              ipc.send('updateAppState', {
+                windowId: windowId,
+                data: 'foo'
+              })
+            }),
+          $$('button').text('Bar')
+            .on('click', () => {
+              console.log('BAR')
+              ipc.send('updateAppState', {
+                windowId: windowId,
+                data: 'bar'
+              })
+            })
+        )
+      }
+    }
 
     window.addEventListener('load', () => {
       Dashboard.mount({
@@ -26,11 +56,13 @@
           editorURL += '?archiveURL='+encodeURIComponent(archiveURL)
           return editorURL
         }
-      }, window.document.body)
+      }, window.document.getElementById('dashboard'))
+      MyButton.mount(window.document.getElementById('buttons'))
     })
   </script>
 </head>
 <body>
-
+  <div id='buttons'></div>
+  <div id='dashboard'></div>
 </body>
 </html>

@@ -1,15 +1,40 @@
 const electron = require('electron')
-// Module to control application life.
-const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-
 const path = require('path')
 const url = require('url')
+
+const { app, ipcMain, Menu } = electron
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+const menu1Template = [
+  {
+    label: 'Foo',
+    submenu: [
+      {
+        label: 'Foo Do',
+        click() { console.log('DO FOO') }
+      }
+    ]
+  }
+]
+const menu1 = Menu.buildFromTemplate(menu1Template)
+
+const menu2Template = [
+  {
+    label: 'Bar',
+    submenu: [
+      {
+        label: 'Bar Zar',
+        click() { console.log('ZAR BAR') }
+      }
+    ]
+  }
+]
+const menu2 = Menu.buildFromTemplate(menu2Template)
 
 function createWindow () {
   // Create the browser window.
@@ -32,6 +57,8 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+  Menu.setApplicationMenu(menu1)
 }
 
 // This method will be called when Electron has finished
@@ -53,5 +80,16 @@ app.on('activate', function () {
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow()
+  }
+})
+
+ipcMain.on('updateAppState', (event, data) => {
+  console.log('RECEIVED FOO EVENT', data)
+  if (data.data === 'foo') {
+    console.log('switch to menu1')
+    Menu.setApplicationMenu(menu1)
+  } else {
+    console.log('switch to menu2')
+    Menu.setApplicationMenu(menu2)
   }
 })
