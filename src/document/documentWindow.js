@@ -94,5 +94,17 @@ window.addEventListener('load', () => {
       appState,
       documentId
     }, window.document.body)
+
+    ipc.on('export:requested', function() {
+      dialog.showSaveDialog({
+        title: 'Export file',
+        filters: [
+          {name: 'Documents', extensions: ['html', 'md', 'Rmd', 'ipynb']}
+        ]
+      }, function(filePath) {
+        backend.exportDocument(documentId, filePath)
+      })
+    })
+
   })
 })

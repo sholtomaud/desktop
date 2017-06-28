@@ -9,6 +9,10 @@ module.exports = function fileMenu(appState) {
         accelerator: 'CommandOrControl+S',
         enabled: appState.hasPendingChanges,
         click: createMenuClickHandler('save:requested')
+      },{
+        label: 'Export',
+        enabled: appState.hasPendingChanges,
+        click: createMenuClickHandler('export:requested')
       }
     ]
   }
