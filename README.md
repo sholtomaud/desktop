@@ -34,3 +34,31 @@ Package the application:
 ```bash
 $ npm run release
 ```
+
+Stencila Desktop is built on top of [`stencila/node`](https://github.com/stencila/node) which in turn is built on top of [`stencila/stencila`](https://github.com/stencila/stencila). Sometimes during development, particularly just prior to a release,  you'll want to work on all three together. To propagate changes from `stencila/stencila` through to the desktop...
+
+```bash
+# In stencila/stencila build the JavaScript UI bundle
+npm run build
+```
+
+```bash
+# In stencila/node copy the JavaScript UI bundle to static/stencila
+npm link stencila
+npm run postinstall
+```
+
+```bash
+# In stencila/desktop copy the JavaScript UI bundle to bundle/lib/stencila
+npm link stencila-node
+npm run build
+```
+
+Remember to do a `npm unlink stencila-node` before doing `npm run release`. 
+
+Although this setup is somewhat convoluted, having a linear dependency simplifies release management. Furthermore, this is only necessary when you really want to development test the UI in the desktop. It can be avoided by mimicking the Desktop environment in the `stencila/stencila` development setup with environment variables e.g.
+
+```bash
+STENCILA_PEERS="http://127.0.0.1:2000 http://127.0.0.1:2100" STENCILA_DISCOVER=30 npm start
+```
+
